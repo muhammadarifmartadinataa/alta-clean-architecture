@@ -1,0 +1,430 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>config: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">rest/config/config.go (0.0%)</option>
+				
+				<option value="file1">rest/config/migration.go (0.0%)</option>
+				
+				<option value="file2">rest/controller/auth/auth_controller.go (0.0%)</option>
+				
+				<option value="file3">rest/controller/auth/request/login_request.go (0.0%)</option>
+				
+				<option value="file4">rest/controller/auth/response/auth_response.go (0.0%)</option>
+				
+				<option value="file5">rest/controller/base/base_response.go (0.0%)</option>
+				
+				<option value="file6">rest/main.go (0.0%)</option>
+				
+				<option value="file7">rest/middleware/jwt.go (0.0%)</option>
+				
+				<option value="file8">rest/repo/auth/auth_repo.go (0.0%)</option>
+				
+				<option value="file9">rest/repo/auth/record.go (0.0%)</option>
+				
+				<option value="file10">rest/service/auth/auth_service.go (63.2%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package config
+
+import (
+        "gorm.io/driver/mysql"
+        "gorm.io/gorm"
+)
+
+func ConnectDatabase() (*gorm.DB, error) <span class="cov0" title="0">{
+        dsn := "root:@tcp(127.0.0.1:3306)/belajar_golang?charset=utf8mb4&amp;parseTime=True&amp;loc=Local"
+        db, err := gorm.Open(mysql.Open(dsn), &amp;gorm.Config{})
+        if err != nil </span><span class="cov0" title="0">{
+                panic("failed konek database")</span>
+        }
+
+        <span class="cov0" title="0">return db, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package config
+
+import (
+        "rest/repo/auth"
+
+        "gorm.io/gorm"
+)
+
+func MigrateDB(db *gorm.DB) <span class="cov0" title="0">{
+        db.AutoMigrate(&amp;auth.User{})
+}</span>
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package auth
+
+import (
+        "rest/controller/auth/request"
+        "rest/controller/auth/response"
+        "rest/controller/base"
+        "rest/service/auth"
+
+        "github.com/labstack/echo/v4"
+)
+
+func NewAuthController(as auth.AuthInterface) *AuthController <span class="cov0" title="0">{
+        return &amp;AuthController{
+                authService: as,
+        }
+}</span>
+
+type AuthController struct {
+        authService auth.AuthInterface
+}
+
+func (userController AuthController) LoginController(c echo.Context) error <span class="cov0" title="0">{
+        userLogin := request.LoginRequest{}
+        c.Bind(&amp;userLogin)
+        user, err := userController.authService.Login(userLogin.ToEntities())
+        if err != nil </span><span class="cov0" title="0">{
+                return base.ErrorResponse(c, err)
+        }</span>
+        <span class="cov0" title="0">return base.SuccesResponse(c, response.FromEntities(user))</span>
+}
+
+func RegisterHandler(c echo.Context) error <span class="cov0" title="0">{
+        return base.SuccesResponse(c, nil)
+}</span>
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package request
+
+import "rest/entities"
+
+type LoginRequest struct {
+        Email    string `json:"email"`
+        Password string `json:"password"`
+}
+
+func (loginRequest LoginRequest) ToEntities() entities.User <span class="cov0" title="0">{
+        return entities.User{
+                Email:    loginRequest.Email,
+                Password: loginRequest.Password,
+        }
+}</span>
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package response
+
+import "rest/entities"
+
+type AuthResponse struct {
+        ID    int    `json:"id"`
+        Nama  string `json:"nama"`
+        Email string `json:"email"`
+        Token string `json:"token"`
+}
+
+func FromEntities(user entities.User) AuthResponse <span class="cov0" title="0">{
+        return AuthResponse{
+                ID:    user.ID,
+                Nama:  user.Nama,
+                Email: user.Email,
+                Token: user.Token,
+        }
+}</span>
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package base
+
+import (
+        "net/http"
+
+        "github.com/labstack/echo/v4"
+)
+
+type BaseResponse struct {
+        Status  bool        `json:"status"`
+        Message string      `json:"message"`
+        Data    interface{} `json:"data"`
+}
+
+func SuccesResponse(c echo.Context, data any) error <span class="cov0" title="0">{
+        return c.JSON(http.StatusOK, BaseResponse{
+                Status:  true,
+                Message: "success",
+                Data:    data,
+        })
+}</span>
+
+func ErrorResponse(c echo.Context, err error) error <span class="cov0" title="0">{
+        return c.JSON(http.StatusInternalServerError, BaseResponse{
+                Status:  false,
+                Message: err.Error(),
+        })
+}</span>
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package main
+
+import (
+        "rest/config"
+        authController "rest/controller/auth"
+        authRepo "rest/repo/auth"
+        authService "rest/service/auth"
+
+        "github.com/labstack/echo/v4"
+)
+
+func main() <span class="cov0" title="0">{
+        db, _ := config.ConnectDatabase()
+        config.MigrateDB(db)
+        e := echo.New()
+        authRepo := authRepo.NewAuthRepo(db)
+        authService := authService.NewAuthService(authRepo)
+        authController := authController.NewAuthController(authService)
+
+        e.POST("/login", authController.LoginController)
+        // e.POST("/register", authController.RegisterHandler)
+        e.Start(":8000")
+}</span>
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package middleware
+
+import (
+        "time"
+
+        "github.com/golang-jwt/jwt/v5"
+)
+
+type jwtCustomClaims struct {
+        Name   string `json:"name"`
+        UserID int    `json:"userID"`
+        jwt.RegisteredClaims
+}
+
+func GenerateJWT(userID int, name string) (string, error) <span class="cov0" title="0">{
+        claims := &amp;jwtCustomClaims{
+                name,
+                userID,
+                jwt.RegisteredClaims{
+                        ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 72)),
+                },
+        }
+
+        // Create token with claims
+        token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+        t, err := token.SignedString([]byte("alta"))
+        if err != nil </span><span class="cov0" title="0">{
+                return "", err
+        }</span>
+        <span class="cov0" title="0">return t, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package auth
+
+import (
+        "rest/entities"
+
+        "gorm.io/gorm"
+)
+
+func NewAuthRepo(db *gorm.DB) *AuthRepo <span class="cov0" title="0">{
+        return &amp;AuthRepo{
+                db: db,
+        }
+}</span>
+
+type AuthRepo struct {
+        db *gorm.DB
+}
+
+func (authRepo AuthRepo) Login(user entities.User) (entities.User, error) <span class="cov0" title="0">{
+        userDb := FromEntities(user)
+        result := authRepo.db.First(&amp;userDb, "email = ? AND password = ?", userDb.Email, userDb.Password)
+        if result.Error != nil </span><span class="cov0" title="0">{
+                return entities.User{}, result.Error
+        }</span>
+        <span class="cov0" title="0">return userDb.ToEntities(), nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">package auth
+
+import "rest/entities"
+
+type User struct {
+        ID       int `gorm:"primaryKey"`
+        Nama     string
+        Email    string
+        Password string
+}
+
+func FromEntities(user entities.User) User <span class="cov0" title="0">{
+        return User{
+                ID:       user.ID,
+                Nama:     user.Nama,
+                Email:    user.Email,
+                Password: user.Password,
+        }
+}</span>
+
+func (user User) ToEntities() entities.User <span class="cov0" title="0">{
+        return entities.User{
+                ID:       user.ID,
+                Nama:     user.Nama,
+                Email:    user.Email,
+                Password: user.Password,
+        }
+}</span>
+</pre>
+		
+		<pre class="file" id="file10" style="display: none">package auth
+
+import (
+        "errors"
+        "rest/entities"
+        "rest/repo/auth"
+
+        "golang.org/x/crypto/bcrypt"
+)
+
+func NewAuthService(ar auth.AuthRepoInterface) *AuthService <span class="cov8" title="1">{
+        return &amp;AuthService{
+                authRepoInterface: ar,
+        }
+}</span>
+
+type AuthService struct {
+        authRepoInterface auth.AuthRepoInterface
+}
+
+func (authService AuthService) Login(user entities.User) (entities.User, error) <span class="cov8" title="1">{
+        if user.Email == "" </span><span class="cov8" title="1">{
+                return entities.User{}, errors.New("email empty")
+        }</span> else<span class="cov8" title="1"> if user.Password == "" </span><span class="cov0" title="0">{
+                return entities.User{}, errors.New("password empty")
+        }</span>
+
+        <span class="cov8" title="1">var err error
+        user, err = authService.authRepoInterface.Login(user)
+        if err != nil </span><span class="cov0" title="0">{
+                return entities.User{}, err
+        }</span>
+        <span class="cov8" title="1">return user, nil</span>
+}
+func (authService AuthService) Register(user entities.User) (entities.User, error) <span class="cov0" title="0">{
+        return entities.User{}, nil
+}</span>
+
+func HashPassword(password string) (string, error) <span class="cov0" title="0">{
+        bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+        return string(bytes), err
+}</span>
+
+func CheckPasswordHash(password, hash string) bool <span class="cov0" title="0">{
+        err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+        return err == nil
+}</span>
+
+func Add(a, b int) int <span class="cov8" title="1">{
+        result := a + b
+        if result &lt; 0 </span><span class="cov8" title="1">{
+                return 0
+        }</span>
+
+        <span class="cov8" title="1">return result</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
